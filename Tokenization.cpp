@@ -16,10 +16,10 @@ namespace Tokenization {
             case '/': addToken(SLASH, c); break;
             case '=':
                 if (matchNext('=')) {
-                    addToken(EQUAL_EQUAL, "=");
+                    addToken(EQUAL_EQUAL, "==");
                     advance();
                 } else {
-                    addToken(EQUAL, "==");
+                    addToken(EQUAL, "=");
                 }
                 break;
                 
@@ -37,10 +37,10 @@ namespace Tokenization {
                 
             case '>':
                 if (matchNext('=')) {
-                    addToken(GREATER_EQUAL, ">");
-                    advance();                    
-                } else{
                     addToken(GREATER_EQUAL, ">=");
+                    advance();
+                } else{
+                    addToken(GREATER, ">");
                 }
                 break;
             case ' ':
