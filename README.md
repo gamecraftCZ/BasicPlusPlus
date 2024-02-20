@@ -52,8 +52,12 @@ Variable are assigned using `LET` keyword
   - Joining `+`
     - `<string> + <string> -> <string>`
     - `<string> + <number> -> <string>`
+    - `<string> + <boolean> -> <string>`
+    - `<number> + <string> -> <string>`
+    - `<boolean> + <string> -> <string>`
     - eg. `"I am from" + "Pilsen" -> "I am from Pilsen"`
     - eg. `"I am " + 7 + "years old." -> "I am 7 years old."`
+    - eg. `"This statement is " + True -> "This statement is TRUE"`
 
   - Comparing `==`, `<>`
     - `<string> OP <string> -> <boolean>`
@@ -77,9 +81,12 @@ Keywords are case-insensitive
 #### Input / Output
 - `PRINT <expr>`
   - Evaluates and prints expr to stdout with new line at the end
+  - \<expr\> can be `string`, `number`, `boolean`
+  - `number` is printed to two decimal places if decimal, otherwise it gets printed without decimal places if whole.
   - eg. `PRINT "Age: " + 7`
 - `INPUT <expr>, var` 
   - Evaluates and prints expr to stdout and reads user input to variable var
+  - \<expr\> can be `string`, `number`, `boolean`
   - eg. `INPUT "Age: ", age`
 
 #### Control flow
@@ -132,7 +139,7 @@ Keywords are case-insensitive
 
 #### Other
 - `REM comment`
-  - Comment. Line starting with `REM` is ignored.
+  - Comment. Anything after `REM` on that line is ignored.
 
 - `TONUM var(, out_var)`
   - Converts `var` to number and saves the result to `out_var`

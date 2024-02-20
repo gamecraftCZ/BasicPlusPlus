@@ -1,7 +1,3 @@
-//
-// Created by patrik on 20.02.2024.
-//
-
 #ifndef BASICPLUSPLUS_TOKENIZATION_HPP
 #define BASICPLUSPLUS_TOKENIZATION_HPP
 
@@ -11,8 +7,11 @@
 #include <vector>
 #include <memory>
 #include <map>
+#include <istream>
 
 namespace Tokenization {
+    using Literal = std::variant<std::string, double, bool>;
+    
     enum TokenType {
         // One character
         LEFT_PAREN, RIGHT_PAREN, COMMA,
@@ -27,14 +26,13 @@ namespace Tokenization {
         IDENTIFIER, STRING, NUMBER, BOOLEAN,
 
         // Keywords
-        NOT, REM, LET, INPUT, PRINT, TONUM, TOSTR,
+        REM, LET, INPUT, PRINT, TONUM, TOSTR,
         IF, THEN, ELSE, END, WHILE, DO, BREAK, CONTINUE,
-
+        NOT, AND, OR,
+        
         EOF_TOKEN
     };
-
-    using Literal = std::variant<std::string, double, bool>;
-
+    
     class Token {
     public:
         const TokenType type;

@@ -95,7 +95,6 @@ namespace Tokenization {
     }
     
     const std::map<std::string, TokenType> Tokenizer::keywords = {
-        {"not", NOT},
         {"rem", REM},
         {"let", LET},
         {"input", INPUT},
@@ -110,6 +109,9 @@ namespace Tokenization {
         {"do", DO},
         {"break", BREAK},
         {"continue", CONTINUE},
+        {"not", NOT},
+        {"and", AND},
+        {"or", OR},
     };
 
     void Tokenizer::scanIdentifier() {

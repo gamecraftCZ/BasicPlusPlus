@@ -1,0 +1,5 @@
+PRINT "Hello BASIC Hell."
+
+PRINT 7 + 5*5
+
+PRINT "Your are " + 18 + " or more"
