@@ -77,7 +77,8 @@ namespace Tokenization {
         
         advance();  // Closing "
 
-        addToken(STRING, std::move(str), std::string(str));
+        std::string literal(str);
+        addToken(STRING, '"' + str + '"', std::move(literal));
     }
 
     void Tokenizer::scanNumber() {
