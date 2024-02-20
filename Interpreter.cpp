@@ -64,9 +64,60 @@ namespace Interpreting {
                 }
                 throwError("Binary '/' is not allowed on '" + getLiteralTypeName(left) + "' / '" + getLiteralTypeName(right) + "' types.", expr);
                 
-            // TODO More Binary operations
+            case Tokenization::LESS:
+                if (std::holds_alternative<double>(left) && std::holds_alternative<double>(right)){
+                    return std::get<double>(left) < std::get<double>(right);
+                }
+                throwError("Binary '<' is not allowed on '" + getLiteralTypeName(left) + "' < '" + getLiteralTypeName(right) + "' types.", expr);
+                
+            case Tokenization::GREATER:
+                if (std::holds_alternative<double>(left) && std::holds_alternative<double>(right)){
+                    return std::get<double>(left) > std::get<double>(right);
+                }
+                throwError("Binary '>' is not allowed on '" + getLiteralTypeName(left) + "' > '" + getLiteralTypeName(right) + "' types.", expr);
+                
+            case Tokenization::LESS_EQUAL:
+                if (std::holds_alternative<double>(left) && std::holds_alternative<double>(right)){
+                    return std::get<double>(left) <= std::get<double>(right);
+                }
+                throwError("Binary '<=' is not allowed on '" + getLiteralTypeName(left) + "' <= '" + getLiteralTypeName(right) + "' types.", expr);
+                
+            case Tokenization::GREATER_EQUAL:
+                if (std::holds_alternative<double>(left) && std::holds_alternative<double>(right)){
+                    return std::get<double>(left) >= std::get<double>(right);
+                }
+                throwError("Binary '>=' is not allowed on '" + getLiteralTypeName(left) + "' >= '" + getLiteralTypeName(right) + "' types.", expr);
+                
+            case Tokenization::EQUAL_EQUAL:
+                if (std::holds_alternative<double>(left) && std::holds_alternative<double>(right)){
+                    return std::get<double>(left) == std::get<double>(right);
+                }
+                if (std::holds_alternative<std::string>(left) && std::holds_alternative<std::string>(right)){
+                    return std::get<std::string>(left) == std::get<std::string>(right);
+                }
+                throwError("Binary '==' is not allowed on '" + getLiteralTypeName(left) + "' == '" + getLiteralTypeName(right) + "' types.", expr);
+                
+            case Tokenization::NOT_EQUAL:
+                if (std::holds_alternative<double>(left) && std::holds_alternative<double>(right)){
+                    return std::get<double>(left) != std::get<double>(right);
+                }
+                if (std::holds_alternative<std::string>(left) && std::holds_alternative<std::string>(right)){
+                    return std::get<std::string>(left) != std::get<std::string>(right);
+                }
+                throwError("Binary '<>' is not allowed on '" + getLiteralTypeName(left) + "' <> '" + getLiteralTypeName(right) + "' types.", expr);
+                
+            case Tokenization::AND:
+                if (std::holds_alternative<bool>(left) && std::holds_alternative<bool>(right)){
+                    return std::get<bool>(left) && std::get<bool>(right);
+                }
+                throwError("Binary 'AND' is not allowed on '" + getLiteralTypeName(left) + "' AND '" + getLiteralTypeName(right) + "' types.", expr);
+                
+            case Tokenization::OR:
+                if (std::holds_alternative<bool>(left) && std::holds_alternative<bool>(right)){
+                    return std::get<bool>(left) || std::get<bool>(right);
+                }
+                throwError("Binary 'OR' is not allowed on '" + getLiteralTypeName(left) + "' OR '" + getLiteralTypeName(right) + "' types.", expr);
         }
-        
         
         // Unreachable
         throw std::runtime_error("UNREACHABLE!");
