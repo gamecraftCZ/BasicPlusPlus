@@ -1,0 +1,11 @@
+REM Personalised welcome script
+
+INPUT "Whats your name: ", name
+INPUT "How old are you: ", age
+TONUM age
+
+IF age < 12 THEN
+  PRINT "Hi kid!"
+ELSE
+  PRINT "Welcome " + name
+END
