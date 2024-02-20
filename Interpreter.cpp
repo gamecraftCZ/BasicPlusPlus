@@ -123,9 +123,19 @@ namespace Interpreting {
         throw std::runtime_error("UNREACHABLE!");
     }
 
+    Tokenization::Literal Interpreter::visit(ExprStmt::VarExpr &expr) {
+        return getVarValue(expr.varName, expr);
+    }
+
     void Interpreter::throwError(std::string message, ExprStmt::Expr &expr) {
         errorMessage = std::move(message);
 //        errorExpression = expr;  // TODO
+        throw InterpreterError();
+    }
+
+    void Interpreter::throwError(std::string message, ExprStmt::Stmt &stmt) {
+        errorMessage = std::move(message);
+//        errorStatement = stmt;  // TODO
         throw InterpreterError();
     }
 
@@ -156,6 +166,18 @@ namespace Interpreting {
         }, literal);
     }
 
+    Tokenization::Literal Interpreter::getVarValue(const std::string &varName, ExprStmt::Expr &expr) {
+        auto value = globalVariables.find(varName);
+        if (value == globalVariables.end()) throwError("VariableNotDeclared", expr);
+        return value->second;
+    }
+    
+    Tokenization::Literal Interpreter::getVarValue(const std::string &varName, ExprStmt::Stmt &stmt) {
+        auto value = globalVariables.find(varName);
+        if (value == globalVariables.end()) throwError("VariableNotDeclared", stmt);
+        return value->second;
+    }
+    
     void Interpreter::interpret(ExprStmt::stmt_ptr &stmt) {
         stmt->accept(*this);
     }
@@ -164,8 +186,46 @@ namespace Interpreting {
         Tokenization::Literal value = stmt.expr->accept(*this);
         std::cout << stringify(value) << std::endl; 
     }
+    
+    void Interpreter::visit(ExprStmt::InputStmt &stmt) {
+        Tokenization::Literal value = stmt.expr->accept(*this);
+        std::cout << stringify(value);
+        std::string outValue;
+        std::getline(std::cin, outValue);
+        globalVariables[stmt.targetVarName] = outValue;
+    }
+    
+    void Interpreter::visit(ExprStmt::LetStmt &stmt) {
+        Tokenization::Literal value = stmt.expr->accept(*this);
+        globalVariables[stmt.targetVarName] = value;
+    }
+    
+    void Interpreter::visit(ExprStmt::ToNumStmt &stmt) {
+        Tokenization::Literal value = getVarValue(stmt.srcVar, stmt);
+        Tokenization::Literal newValue;
+        if (std::holds_alternative<double>(value)) newValue = value;
+        if (std::holds_alternative<bool>(value)) newValue = std::get<bool>(value) ? 1. : 0.;
+        if (std::holds_alternative<std::string>(value)) {
+            // Parse string
+            try {
+                newValue = std::stod(std::get<std::string>(value));
+            } catch (const std::invalid_argument&) {
+                throwError("InvalidNumberFormat", stmt);
+            } catch (const std::out_of_range&) {
+                throwError("InvalidNumberFormat", stmt);
+            }
+        }
+        globalVariables[stmt.dstVar.has_value() ? stmt.dstVar.value() : stmt.srcVar] = newValue;
+    }
+    
+    void Interpreter::visit(ExprStmt::ToStrStmt &stmt) {
+        Tokenization::Literal value = getVarValue(stmt.srcVar, stmt);
+        Tokenization::Literal newValue = stringify(value);
+        globalVariables[stmt.dstVar.has_value() ? stmt.dstVar.value() : stmt.srcVar] = newValue;
+    }
 
     std::string &Interpreter::getErrorMessage() {
         return errorMessage;
     }
+
 }

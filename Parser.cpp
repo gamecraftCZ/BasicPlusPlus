@@ -120,23 +120,85 @@ namespace Parsing {
             return std::make_unique<GroupingExpr>(std::move(expr));
         }
 
+        if (match(IDENTIFIER)) {
+            std::string varName = std::get<std::string>(prev().literal.value());
+            return std::make_unique<VarExpr>(std::move(varName));
+        }
+
         throwErrorAtCurrentToken("Expression expected.");
         return nullptr;  // Unreachable
     }
     
     // Parsing statements
-    stmt_ptr Parser::statement() {
-        while (match(REM)) {}  // Skip comments
-        if (match(PRINT)) return printStatement();
-        // TODO
+    stmt_ptr Parser::declaration() {
+        if (match(LET)) return letDeclaration();
 
+        return statement();
+    }
+    
+    stmt_ptr Parser::statement() {
+        if (match(PRINT)) return printStmt();
+        if (match(INPUT)) return inputStmt();
+        if (match(TONUM)) return toNumStmt();
+        if (match(TOSTR)) return toStrStmt();
+        if (match(INPUT)) return inputStmt();
+        // TODO more statements
+        
         throwErrorAtCurrentToken("Statement expected.");
         return nullptr;  // Unreachable
     }
     
-    stmt_ptr Parser::printStatement() {
+    stmt_ptr Parser::printStmt() {
         expr_ptr value = expression();
         return std::make_unique<PrintStmt>(std::move(value));
+    }
+    
+    stmt_ptr Parser::inputStmt() {
+        expr_ptr value = expression();
+        consume(COMMA, "INPUT expects two parameters separated by comma.");
+        Token targetVariableToken = consume(IDENTIFIER, "INPUT second parameter must be variable identifier.");
+        std::string targetVariable = std::get<std::string>(targetVariableToken.literal.value());
+        return std::make_unique<InputStmt>(std::move(value), std::move(targetVariable));
+    }
+    
+    stmt_ptr Parser::toNumStmt() {
+        Token srcVarToken = consume(IDENTIFIER, "TONUM first parameter must be variable identifier.");
+        std::string srcVarName = std::get<std::string>(srcVarToken.literal.value());
+        
+        std::optional<std::string> dstVarName = std::nullopt;
+        
+        if (check(COMMA)) {
+            advance();
+
+            Token dstVarToken = consume(IDENTIFIER, "TONUM second parameter must be variable identifier.");
+            dstVarName = std::get<std::string>(dstVarToken.literal.value());
+        }
+        
+        return std::make_unique<ToNumStmt>(std::move(srcVarName), std::move(dstVarName));
+    }
+    
+    stmt_ptr Parser::toStrStmt() {
+        Token srcVarToken = consume(IDENTIFIER, "TOSTR first parameter must be variable identifier.");
+        std::string srcVarName = std::get<std::string>(srcVarToken.literal.value());
+        
+        std::optional<std::string> dstVarName = std::nullopt;
+        
+        if (check(COMMA)) {
+            advance();
+
+            Token dstVarToken = consume(IDENTIFIER, "TOSTR second parameter must be variable identifier.");
+            dstVarName = std::get<std::string>(dstVarToken.literal.value());
+        }
+        
+        return std::make_unique<ToNumStmt>(std::move(srcVarName), std::move(dstVarName));
+    }
+    
+    stmt_ptr Parser::letDeclaration() {
+        Token variableToken = consume(IDENTIFIER, "Variable name expected after LET.");
+        std::string variableName = std::get<std::string>(variableToken.literal.value());
+        consume(EQUAL, "Equal sign expected after variable identifier.");
+        expr_ptr value = expression();
+        return std::make_unique<LetStmt>(std::move(value), std::move(variableName));
     }
     
     // Parse all the statements
@@ -144,7 +206,7 @@ namespace Parsing {
         std::unique_ptr<std::vector<stmt_ptr>> statements = std::make_unique<std::vector<stmt_ptr>>();
 
         while (!isAtEnd()) {
-            stmt_ptr stmt = statement();
+            stmt_ptr stmt = declaration();
             statements->push_back(std::move(stmt));
         }
 

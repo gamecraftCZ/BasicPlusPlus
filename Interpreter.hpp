@@ -10,15 +10,23 @@ namespace Interpreting {
     
     class Interpreter : public ExprStmt::AbstractExprVisitor, public ExprStmt::AbstractStmtVisitor {
     private:
+        std::map<std::string, Tokenization::Literal> globalVariables;
+        
 //        std::unique_ptr<std::vector<ExprStmt::expr_ptr>> expressions;
         std::string errorMessage;
         ExprStmt::expr_ptr errorExpression;
 
         void throwError(std::string message, ExprStmt::Expr &expr);
         
+        void throwError(std::string message, ExprStmt::Stmt &stmt);
+        
         std::string getLiteralTypeName(Tokenization::Literal &literal);
         
         std::string stringify(Tokenization::Literal &literal);
+        
+        Tokenization::Literal getVarValue(const std::string &varName, ExprStmt::Expr &expr);
+
+        Tokenization::Literal getVarValue(const std::string &varName, ExprStmt::Stmt &stmt);
 
     public:
         Tokenization::Literal visit(ExprStmt::UnaryExpr &expr) override;
@@ -29,7 +37,17 @@ namespace Interpreting {
 
         Tokenization::Literal visit(ExprStmt::LiteralExpr &expr) override;
         
+        Tokenization::Literal visit(ExprStmt::VarExpr &expr) override;
+        
         void visit(ExprStmt::PrintStmt &stmt) override;
+        
+        void visit(ExprStmt::InputStmt &stmt) override;
+        
+        void visit(ExprStmt::LetStmt &stmt) override;
+        
+        void visit(ExprStmt::ToNumStmt &stmt) override;
+        
+        void visit(ExprStmt::ToStrStmt &stmt) override;
         
         void interpret(ExprStmt::stmt_ptr &stmt);
 

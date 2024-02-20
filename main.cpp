@@ -1,13 +1,31 @@
 #include <iostream>
+#include <memory>
+#include <fstream>
 #include "Tokenization.hpp"
 #include "Parser.hpp"
 #include "Interpreter.hpp"
 
-int main() {
+int main(int argc, char** argv) {
     try {
+        // Open file with input
+        std::vector<std::string> args(argv, argv + argc);
+
+        // TODO Input params handling
+//        if (argc < 3) {
+//            std::cout << "Usage: " << args[0] << " [conditions] <input_file> <output_file>" << std::endl;
+//            throw std::runtime_error("No input and output file specified.");
+//        }
+
+
+        std::string inputFilename = args[1];
+        std::ifstream inStream(inputFilename);
+        if (inStream.fail()) throw std::runtime_error("Failed to open input file");
+        
+//        Tokenization::Tokenizer tokenizer(std::cin);
+        Tokenization::Tokenizer tokenizer(inStream);
+        
         // Tokenization
         std::unique_ptr<std::vector<Tokenization::Token>> tokens;
-        Tokenization::Tokenizer tokenizer(std::cin);
         try {
             tokenizer.scanTokens();
             tokens = tokenizer.getTokens();

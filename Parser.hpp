@@ -31,9 +31,19 @@ namespace Parsing {
         ExprStmt::expr_ptr primary();
         
         // Statement parsing
+        ExprStmt::stmt_ptr declaration();
+        
         ExprStmt::stmt_ptr statement();
         
-        ExprStmt::stmt_ptr printStatement();
+        ExprStmt::stmt_ptr printStmt();
+        
+        ExprStmt::stmt_ptr inputStmt();
+        
+        ExprStmt::stmt_ptr letDeclaration();
+        
+        ExprStmt::stmt_ptr toNumStmt();
+        
+        ExprStmt::stmt_ptr toStrStmt();
         
         // Helper functions
         template<typename... Args>

@@ -131,8 +131,8 @@ namespace Tokenization {
             if (type->second == REM) {
                 // Ignore everything after REM
                 std::string comment;
-                while (peek() != '\n') comment.push_back(advance());
-                addToken(type->second, std::move(word), std::move(comment));
+                while (advance() != '\n' && !isAtEnd()) {};  //comment.push_back(advance());
+//                addToken(type->second, std::move(word), std::move(comment));
             } else {
                 addToken(type->second, std::move(word));
             }
@@ -155,7 +155,7 @@ namespace Tokenization {
          lastChar = curChar;
          curChar = nextChar;
         
-         if (!inputStream.get(nextChar)) {
+         if (inputStream.eof() || !inputStream.get(nextChar) || nextChar == '\0') {
              isEnd = true;
              nextChar = 0;
          }

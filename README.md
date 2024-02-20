@@ -27,10 +27,13 @@ END
 
 
 ### Variable assigment
-Variable are assigned using `LET` keyword
+Variable are declared and assigned using `LET` keyword
 - eg. `LET num = 14`
 - eg. `LET VarOne = "Age: " + 14`
 
+
+- You must use let even when assigning to already existing variable.
+- There is no such value as null. Every variable must have a value.
 
 ### Operations with types
 
@@ -75,8 +78,10 @@ Variable are assigned using `LET` keyword
 
 
 ### Language functionality
-Keywords are case-insensitive
 
+- Keywords are case-insensitive
+
+- There is no such value as null. Every variable must have a value.
 
 #### Input / Output
 - `PRINT <expr>`
@@ -157,3 +162,4 @@ If error occur, execution of code stops and error message is printed to stderr.
 - `DivisionByZero`
 - `LoopControlOutsideLoop`
 - `InvalidNumberFormat`
+- `VariableNotDeclared`
