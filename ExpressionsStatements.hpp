@@ -36,6 +36,8 @@ namespace ExprStmt {
     class BlockStmt;
     class IfStmt;
     class WhileStmt;
+    class ContinueStmt;
+    class BreakStmt;
 
     class AbstractStmtVisitor {
     public:
@@ -50,6 +52,8 @@ namespace ExprStmt {
         virtual void visit(BlockStmt &stmt) = 0;
         virtual void visit(IfStmt &stmt) = 0;
         virtual void visit(WhileStmt &stmt) = 0;
+        virtual void visit(ContinueStmt &stmt) = 0;
+        virtual void visit(BreakStmt &stmt) = 0;
     };
 
     using stmt_ptr = std::unique_ptr<Stmt>;
@@ -225,6 +229,20 @@ namespace ExprStmt {
 
         WhileStmt(expr_ptr &&conditionExpr, stmt_ptr &&thenBranch, uint32_t line) : 
             conditionExpr(std::move(conditionExpr)), thenBranch(std::move(thenBranch)), Stmt(line) {}
+
+        virtual void accept(AbstractStmtVisitor &v) override { return v.visit(*this); }
+    };
+
+    class BreakStmt : public Stmt {
+    public:
+        BreakStmt(uint32_t line) : Stmt(line) {}
+
+        virtual void accept(AbstractStmtVisitor &v) override { return v.visit(*this); }
+    };
+    
+    class ContinueStmt : public Stmt {
+    public:
+        ContinueStmt(uint32_t line) : Stmt(line) {}
 
         virtual void accept(AbstractStmtVisitor &v) override { return v.visit(*this); }
     };

@@ -7,6 +7,8 @@
 
 namespace Interpreting {
     class InterpreterError : public std::exception {};
+    class Break : public std::exception {};
+    class Continue : public std::exception {};
     
     class Interpreter : public ExprStmt::AbstractExprVisitor, public ExprStmt::AbstractStmtVisitor {
     private:
@@ -56,6 +58,10 @@ namespace Interpreting {
         void visit(ExprStmt::IfStmt &stmt) override;
 
         void visit(ExprStmt::WhileStmt &stmt) override;
+
+        void visit(ExprStmt::BreakStmt &stmt) override;
+
+        void visit(ExprStmt::ContinueStmt &stmt) override;
 
         void interpret(ExprStmt::stmt_ptr &stmt);
 

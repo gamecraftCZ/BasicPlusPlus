@@ -145,7 +145,8 @@ namespace Parsing {
         if (match(TONUM)) return toNumStmt();
         if (match(TOSTR)) return toStrStmt();
         if (match(RND)) return rndStmt();
-        // TODO more statements
+        if (match(BREAK)) return std::make_unique<BreakStmt>(prev().line);
+        if (match(CONTINUE)) return std::make_unique<ContinueStmt>(prev().line);
         
         throwErrorAtCurrentToken("Statement expected.");
         return nullptr;  // Unreachable

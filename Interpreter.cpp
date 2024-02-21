@@ -267,16 +267,31 @@ namespace Interpreting {
             throwError("ConditionNotBoolean", stmt);
         }
     }
-
+    
     void Interpreter::visit(ExprStmt::WhileStmt &stmt) {
         Tokenization::Literal cond = stmt.conditionExpr->accept(*this);
         while (std::holds_alternative<bool>(cond) && std::get<bool>(cond)) {
-            stmt.thenBranch->accept(*this);
+            try {
+                stmt.thenBranch->accept(*this);
+            } catch (const Break&) {
+                // TODO break
+                break;
+            } catch (const Continue&) {
+                // continue
+            }
             cond = stmt.conditionExpr->accept(*this);
         }
         if (!std::holds_alternative<bool>(cond)) {
             throwError("ConditionNotBoolean", stmt);
         }
+    }
+
+    void Interpreter::visit(ExprStmt::BreakStmt &stmt) {
+        throw Break();
+    }
+    
+    void Interpreter::visit(ExprStmt::ContinueStmt &stmt) {
+        throw Continue();
     }
 
 }
