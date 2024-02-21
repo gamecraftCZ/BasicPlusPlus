@@ -68,7 +68,7 @@ namespace Parsing {
         while (match(GREATER, GREATER_EQUAL, LESS, LESS_EQUAL, NOT_EQUAL, EQUAL_EQUAL)) {
             Token op = prev();
             expr_ptr right = term();
-            expr = std::make_unique<BinaryExpr>(std::move(expr), std::move(op), std::move(right));
+            expr = std::make_unique<BinaryExpr>(std::move(expr), std::move(op), std::move(right), prev().line);
         }
 
         return expr;
@@ -80,7 +80,7 @@ namespace Parsing {
         while (match(MINUS, PLUS)) {
             Token op = prev();
             expr_ptr right = factor();
-            expr = std::make_unique<BinaryExpr>(std::move(expr), std::move(op), std::move(right));
+            expr = std::make_unique<BinaryExpr>(std::move(expr), std::move(op), std::move(right), prev().line);
         }
 
         return expr;
@@ -92,7 +92,7 @@ namespace Parsing {
         while (match(SLASH, STAR)) {
             Token op = prev();
             expr_ptr right = unary();
-            expr = std::make_unique<BinaryExpr>(std::move(expr), std::move(op), std::move(right));
+            expr = std::make_unique<BinaryExpr>(std::move(expr), std::move(op), std::move(right), prev().line);
         }
 
         return expr;
@@ -102,7 +102,7 @@ namespace Parsing {
         if (match(NOT, MINUS)) {
             Token op = prev();
             expr_ptr right = unary();
-            return std::make_unique<UnaryExpr>(std::move(op), std::move(right));
+            return std::make_unique<UnaryExpr>(std::move(op), std::move(right), prev().line);
         }
 
         return primary();
@@ -111,18 +111,18 @@ namespace Parsing {
     expr_ptr Parser::primary() {
         if (match(NUMBER, STRING, BOOLEAN)) {
             Literal value = prev().literal.value();
-            return std::make_unique<LiteralExpr>(std::move(value));
+            return std::make_unique<LiteralExpr>(std::move(value), prev().line);
         }
 
         if (match(LEFT_PAREN)) {
             expr_ptr expr = expression();
             consume(RIGHT_PAREN, "Expect ')' after expression.");
-            return std::make_unique<GroupingExpr>(std::move(expr));
+            return std::make_unique<GroupingExpr>(std::move(expr), prev().line);
         }
 
         if (match(IDENTIFIER)) {
             std::string varName = std::get<std::string>(prev().literal.value());
-            return std::make_unique<VarExpr>(std::move(varName));
+            return std::make_unique<VarExpr>(std::move(varName), prev().line);
         }
 
         throwErrorAtCurrentToken("Expression expected.");
@@ -137,20 +137,33 @@ namespace Parsing {
     }
     
     stmt_ptr Parser::statement() {
+        if (match(IF)) return ifStmt();
+        if (match(WHILE)) return whileStmt();
+        
         if (match(PRINT)) return printStmt();
         if (match(INPUT)) return inputStmt();
         if (match(TONUM)) return toNumStmt();
         if (match(TOSTR)) return toStrStmt();
-        if (match(INPUT)) return inputStmt();
+        if (match(RND)) return rndStmt();
         // TODO more statements
         
         throwErrorAtCurrentToken("Statement expected.");
         return nullptr;  // Unreachable
     }
     
+    ExprStmt::stmt_ptr Parser::block() {
+        std::vector<stmt_ptr> declars;
+        
+        while (!check(END) && !check(ELSE)) {
+            declars.push_back(declaration());
+        }
+        
+        return std::make_unique<BlockStmt>(std::move(declars), prev().line);
+    }
+    
     stmt_ptr Parser::printStmt() {
         expr_ptr value = expression();
-        return std::make_unique<PrintStmt>(std::move(value));
+        return std::make_unique<PrintStmt>(std::move(value), prev().line);
     }
     
     stmt_ptr Parser::inputStmt() {
@@ -158,7 +171,7 @@ namespace Parsing {
         consume(COMMA, "INPUT expects two parameters separated by comma.");
         Token targetVariableToken = consume(IDENTIFIER, "INPUT second parameter must be variable identifier.");
         std::string targetVariable = std::get<std::string>(targetVariableToken.literal.value());
-        return std::make_unique<InputStmt>(std::move(value), std::move(targetVariable));
+        return std::make_unique<InputStmt>(std::move(value), std::move(targetVariable), prev().line);
     }
     
     stmt_ptr Parser::toNumStmt() {
@@ -174,7 +187,7 @@ namespace Parsing {
             dstVarName = std::get<std::string>(dstVarToken.literal.value());
         }
         
-        return std::make_unique<ToNumStmt>(std::move(srcVarName), std::move(dstVarName));
+        return std::make_unique<ToNumStmt>(std::move(srcVarName), std::move(dstVarName), prev().line);
     }
     
     stmt_ptr Parser::toStrStmt() {
@@ -190,7 +203,45 @@ namespace Parsing {
             dstVarName = std::get<std::string>(dstVarToken.literal.value());
         }
         
-        return std::make_unique<ToNumStmt>(std::move(srcVarName), std::move(dstVarName));
+        return std::make_unique<ToNumStmt>(std::move(srcVarName), std::move(dstVarName), prev().line);
+    }
+    
+    stmt_ptr Parser::rndStmt() {
+        Token dstVarToken = consume(IDENTIFIER, "RND first parameter must be variable identifier.");
+        std::string dstVarName = std::get<std::string>(dstVarToken.literal.value());
+
+        consume(COMMA, "RND expects three parameters separated by comma.");
+        expr_ptr lowerBound = expression();
+        
+        consume(COMMA, "RND expects three parameters separated by comma.");
+        expr_ptr upperBound = expression();
+        
+        return std::make_unique<RndStmt>(std::move(dstVarName), std::move(lowerBound), std::move(upperBound), prev().line);
+    }
+    
+    stmt_ptr Parser::ifStmt() {
+        expr_ptr condition = expression();
+        consume(THEN, "THEN keyword expected after IF condition.");
+        
+        stmt_ptr thenBranch = block();
+        std::optional<stmt_ptr> elseBranch = std::nullopt;
+        
+        if (match(ELSE)) {
+            elseBranch = block();
+        }
+
+        consume(END, "END keyword expected at the end of IF condition block.");
+        return std::make_unique<IfStmt>(std::move(condition), std::move(thenBranch), std::move(elseBranch), prev().line);
+    }
+    
+    stmt_ptr Parser::whileStmt() {
+        expr_ptr condition = expression();
+        consume(DO, "DO keyword expected after WHILE condition.");
+        
+        stmt_ptr thenBranch = block();
+        
+        consume(END, "END keyword expected at the end of IF condition block.");
+        return std::make_unique<WhileStmt>(std::move(condition), std::move(thenBranch), prev().line);
     }
     
     stmt_ptr Parser::letDeclaration() {
@@ -198,7 +249,7 @@ namespace Parsing {
         std::string variableName = std::get<std::string>(variableToken.literal.value());
         consume(EQUAL, "Equal sign expected after variable identifier.");
         expr_ptr value = expression();
-        return std::make_unique<LetStmt>(std::move(value), std::move(variableName));
+        return std::make_unique<LetStmt>(std::move(value), std::move(variableName), prev().line);
     }
     
     // Parse all the statements

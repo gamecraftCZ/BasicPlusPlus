@@ -101,6 +101,7 @@ namespace Tokenization {
         {"print", PRINT},
         {"tonum", TONUM},
         {"tostr", TOSTR},
+        {"rnd", RND},
         {"if", IF},
         {"then", THEN},
         {"else", ELSE},
@@ -133,6 +134,7 @@ namespace Tokenization {
                 std::string comment;
                 while (advance() != '\n' && !isAtEnd()) {};  //comment.push_back(advance());
 //                addToken(type->second, std::move(word), std::move(comment));
+                lineNumber++;
             } else {
                 addToken(type->second, std::move(word));
             }

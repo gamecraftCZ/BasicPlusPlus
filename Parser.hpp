@@ -35,6 +35,8 @@ namespace Parsing {
         
         ExprStmt::stmt_ptr statement();
         
+        ExprStmt::stmt_ptr block();
+        
         ExprStmt::stmt_ptr printStmt();
         
         ExprStmt::stmt_ptr inputStmt();
@@ -43,7 +45,13 @@ namespace Parsing {
         
         ExprStmt::stmt_ptr toNumStmt();
         
+        ExprStmt::stmt_ptr rndStmt();
+        
         ExprStmt::stmt_ptr toStrStmt();
+        
+        ExprStmt::stmt_ptr ifStmt();
+        
+        ExprStmt::stmt_ptr whileStmt();
         
         // Helper functions
         template<typename... Args>

@@ -1,5 +1,9 @@
 PRINT "Hello BASIC Hell."
 
-PRINT 7 + 5*5
+PRINT 7 + 5 * 5
+PRINT (7 + 5) * 5
 
 PRINT "Your are " + 18 + " or more"
+
+PRINT "hello == hello : " + ("hello" == "hello")
+PRINT "Hello == hello : " + ("Hello" == "hello")

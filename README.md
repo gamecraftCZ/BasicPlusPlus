@@ -13,6 +13,8 @@ ELSE
 END
 ```
 
+- More examples in `examples/` directory
+
 
 ### Variable names
 - Can contain only english alphabet and underscore `a-zA-Z_`
@@ -155,11 +157,15 @@ Variable are declared and assigned using `LET` keyword
   - Converts `var` to string and saves the result to `out_var`
   - If only `var` is defined, output is saved back to `var`
 
+- `RND var, lowerBound, upperBound`
+  - Generates random whole number in range [lowerBound, upperBound) including lowerBound, excluding upperBound
+
 
 ### Runtime errors
 If error occur, execution of code stops and error message is printed to stderr.
 
-- `DivisionByZero`
-- `LoopControlOutsideLoop`
-- `InvalidNumberFormat`
-- `VariableNotDeclared`
+- `DivisionByZero` = tried to divide by 0
+- `LoopControlOutsideLoop` = using `continue` or `break` outside of loop body
+- `InvalidNumberFormat` = parsing string that is not a number using `TONUM`
+- `VariableNotDeclared` = using variable that was not declared before
+- `ConditionNotBoolean` = condition in `IF` or `WHILE` evaluated to non boolean value

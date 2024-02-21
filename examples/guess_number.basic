@@ -1,0 +1,31 @@
+REM Number guesser game
+
+RND target_num, 0, 100
+PRINT "DEBUG: the number is: " + target_num
+
+LET current_try = 1
+LET num = -1
+
+WHILE num <> target_num DO
+    INPUT "Guess a number from 1 to 100: ", num
+    TONUM num
+    
+    if num == target_num THEN
+        PRINT "Good job!"
+        
+    ELSE
+        IF target_num > num THEN
+            PRINT "Nope, guess higher."
+        ELSE
+            PRINT "Nope, guess lower."
+        END
+        
+        LET current_try = current_try + 1
+        IF current_try > 5 THEN
+            PRINT "You didn't guess it after 5 tries... :("
+            REM BREAK  REM TODO
+        END
+    END
+END
+
+PRINT "Bye Bro."

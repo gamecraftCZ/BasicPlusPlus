@@ -129,13 +129,13 @@ namespace Interpreting {
 
     void Interpreter::throwError(std::string message, ExprStmt::Expr &expr) {
         errorMessage = std::move(message);
-//        errorExpression = expr;  // TODO
+        errorLine = expr.line;
         throw InterpreterError();
     }
 
     void Interpreter::throwError(std::string message, ExprStmt::Stmt &stmt) {
         errorMessage = std::move(message);
-//        errorStatement = stmt;  // TODO
+        errorLine = stmt.line;
         throw InterpreterError();
     }
 
@@ -168,14 +168,22 @@ namespace Interpreting {
 
     Tokenization::Literal Interpreter::getVarValue(const std::string &varName, ExprStmt::Expr &expr) {
         auto value = globalVariables.find(varName);
-        if (value == globalVariables.end()) throwError("VariableNotDeclared", expr);
+        if (value == globalVariables.end()) throwError("VariableNotDeclared '" + varName + "'", expr);
         return value->second;
     }
     
     Tokenization::Literal Interpreter::getVarValue(const std::string &varName, ExprStmt::Stmt &stmt) {
         auto value = globalVariables.find(varName);
-        if (value == globalVariables.end()) throwError("VariableNotDeclared", stmt);
+        if (value == globalVariables.end()) throwError("VariableNotDeclared '" + varName + "'", stmt);
         return value->second;
+    }
+    
+    std::string &Interpreter::getErrorMessage() {
+        return errorMessage;
+    }
+
+    uint32_t Interpreter::getErrorLine() {
+        return errorLine;
     }
     
     void Interpreter::interpret(ExprStmt::stmt_ptr &stmt) {
@@ -223,9 +231,52 @@ namespace Interpreting {
         Tokenization::Literal newValue = stringify(value);
         globalVariables[stmt.dstVar.has_value() ? stmt.dstVar.value() : stmt.srcVar] = newValue;
     }
+    
+    void Interpreter::visit(ExprStmt::RndStmt &stmt) {
+        Tokenization::Literal lowerBound = stmt.lowerBound->accept(*this);
+        Tokenization::Literal upperBound = stmt.upperBound->accept(*this);
 
-    std::string &Interpreter::getErrorMessage() {
-        return errorMessage;
+        if (std::holds_alternative<double>(lowerBound) && std::holds_alternative<double>(upperBound)) {
+            int lowerBoundInt = ceil(std::get<double>(lowerBound));
+            int upperBoundInt = floor(std::get<double>(upperBound));
+            int range = upperBoundInt - lowerBoundInt;
+            double rndValue = (std::rand() % range) + lowerBoundInt;
+            globalVariables[stmt.dstVar] = rndValue;
+        } else {
+            throwError("'RND' is not allowed on '" + getLiteralTypeName(lowerBound) + "', '" + getLiteralTypeName(lowerBound) + "' types.", stmt);
+        }
+    }
+
+    void Interpreter::visit(ExprStmt::BlockStmt &stmt) {
+        for (auto & statement : stmt.statementsList) {
+            statement->accept(*this);
+        }
+    }
+
+    void Interpreter::visit(ExprStmt::IfStmt &stmt) {
+        Tokenization::Literal cond = stmt.conditionExpr->accept(*this);
+        if (std::holds_alternative<bool>(cond)) {
+            if (std::get<bool>(cond)) {
+                stmt.thenBranch->accept(*this);
+            } else {
+                if (stmt.elseBranch.has_value()) {
+                    stmt.elseBranch.value()->accept(*this);
+                }
+            }
+        } else {
+            throwError("ConditionNotBoolean", stmt);
+        }
+    }
+
+    void Interpreter::visit(ExprStmt::WhileStmt &stmt) {
+        Tokenization::Literal cond = stmt.conditionExpr->accept(*this);
+        while (std::holds_alternative<bool>(cond) && std::get<bool>(cond)) {
+            stmt.thenBranch->accept(*this);
+            cond = stmt.conditionExpr->accept(*this);
+        }
+        if (!std::holds_alternative<bool>(cond)) {
+            throwError("ConditionNotBoolean", stmt);
+        }
     }
 
 }

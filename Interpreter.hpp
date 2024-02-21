@@ -14,7 +14,7 @@ namespace Interpreting {
         
 //        std::unique_ptr<std::vector<ExprStmt::expr_ptr>> expressions;
         std::string errorMessage;
-        ExprStmt::expr_ptr errorExpression;
+        uint32_t errorLine;
 
         void throwError(std::string message, ExprStmt::Expr &expr);
         
@@ -49,9 +49,19 @@ namespace Interpreting {
         
         void visit(ExprStmt::ToStrStmt &stmt) override;
         
+        void visit(ExprStmt::RndStmt &stmt) override;
+
+        void visit(ExprStmt::BlockStmt &stmt) override;
+
+        void visit(ExprStmt::IfStmt &stmt) override;
+
+        void visit(ExprStmt::WhileStmt &stmt) override;
+
         void interpret(ExprStmt::stmt_ptr &stmt);
 
         std::string &getErrorMessage();
+        
+        uint32_t getErrorLine();
     };
 }
 

@@ -26,7 +26,7 @@ namespace Tokenization {
         IDENTIFIER, STRING, NUMBER, BOOLEAN,
 
         // Keywords
-        REM, LET, INPUT, PRINT, TONUM, TOSTR,
+        REM, LET, INPUT, PRINT, TONUM, TOSTR, RND,
         IF, THEN, ELSE, END, WHILE, DO, BREAK, CONTINUE,
         NOT, AND, OR,
         

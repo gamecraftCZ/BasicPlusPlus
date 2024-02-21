@@ -54,23 +54,16 @@ int main(int argc, char** argv) {
         
         // Interpreting
         Interpreting::Interpreter interpreter;
+        // Set seed for rnd generator
+        std::srand(std::time(0));
 
         try {
             for (auto &statement : *statements) {
                 interpreter.interpret(statement);
             }
         } catch (const Interpreting::InterpreterError &) {
-            // TODO
-            std::cout //<< "[line " << errorToken.line << "] (at '" << errorToken.lexeme << "')"
+            std::cout << "[line " << interpreter.getErrorLine() << "]"
                       << " Interpreter error: " << interpreter.getErrorMessage() << std::endl;
-//            Tokenization::Token &errorToken = parser.getErrorToken();
-//            if (errorToken.type == Tokenization::EOF_TOKEN) {
-//                std::cout << "[line " << errorToken.line << " (at end of file)]"
-//                          << " Parsing error: " << parser.getErrorMessage() << std::endl;
-//            } else {
-//                std::cout << "[line " << errorToken.line << "] (at '" << errorToken.lexeme << "')"
-//                          << " Parsing error: " << parser.getErrorMessage() << std::endl;
-//            }
             return 13;
         }
 
