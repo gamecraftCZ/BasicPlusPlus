@@ -19,6 +19,12 @@ namespace Parsing {
 
         // Top down expression parsing
         ExprStmt::expr_ptr expression();
+        
+        ExprStmt::expr_ptr orWord();
+        
+        ExprStmt::expr_ptr andWord();
+        
+        ExprStmt::expr_ptr unaryNot();
 
         ExprStmt::expr_ptr comparison();
 

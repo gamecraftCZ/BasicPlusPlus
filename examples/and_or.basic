@@ -1,0 +1,34 @@
+REM Test AND, OR, NOT with precedence
+
+REM Load user input
+INPUT "Enter 1st number: ", no1
+tonum no1
+
+INPUT "Enter 2nd number: ", no2
+tonum no2
+
+INPUT "Enter 3rd number: ", no3
+tonum no3
+
+REM Debug prints
+PRINT "no1 < no2: " + (no1 < no2)
+PRINT "no2 < no3: " + (no2 < no3)
+PRINT "(no1 < no2) AND (no2 < no3): " + ((no1 < no2) AND (no2 < no3))
+
+PRINT "NOT FALSE: " +  (NOT FALSE)
+PRINT "no1 > no3: " + (no1 > no3)
+PRINT "NOT no1 > no3: " + (NOT no1 > no3)
+PRINT "((NOT (no1 > no3)) AND (NOT FALSE)): " + (((NOT (no1 > no3)) AND (NOT FALSE)))
+
+
+REM Some random if
+IF no1 < no2 AND no2 < no3 OR NOT no1 > no3 AND NOT FALSE THEN 
+    PRINT "Jahoda 1"
+END
+
+
+REM Equally with brackets as
+IF (((no1 < no2) AND (no2 < no3)) OR ((NOT (no1 > no3)) AND (NOT FALSE))) THEN 
+    PRINT "Jahoda 2"
+END
+comparison

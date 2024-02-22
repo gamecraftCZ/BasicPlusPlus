@@ -59,6 +59,40 @@ namespace Parsing {
 
     // Top down expression parsing
     expr_ptr Parser::expression() {
+        return orWord();
+    }
+
+    expr_ptr Parser::orWord() {
+        expr_ptr expr = andWord();
+
+        while (match(OR)) {
+            Token op = prev();
+            expr_ptr right = andWord();
+            expr = std::make_unique<BinaryExpr>(std::move(expr), std::move(op), std::move(right), prev().line);
+        }
+
+        return expr;
+    }
+
+    expr_ptr Parser::andWord() {
+        expr_ptr expr = unaryNot();
+
+        while (match(AND)) {
+            Token op = prev();
+            expr_ptr right = unaryNot();
+            expr = std::make_unique<BinaryExpr>(std::move(expr), std::move(op), std::move(right), prev().line);
+        }
+
+        return expr;
+    }
+    
+    expr_ptr Parser::unaryNot() {
+        if (match(NOT)) {
+            Token op = prev();
+            expr_ptr right = unaryNot();
+            return std::make_unique<UnaryExpr>(std::move(op), std::move(right), prev().line);
+        }
+
         return comparison();
     }
 
@@ -99,7 +133,7 @@ namespace Parsing {
     }
 
     expr_ptr Parser::unary() {
-        if (match(NOT, MINUS)) {
+        if (match(MINUS)) {
             Token op = prev();
             expr_ptr right = unary();
             return std::make_unique<UnaryExpr>(std::move(op), std::move(right), prev().line);

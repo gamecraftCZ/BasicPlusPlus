@@ -17,10 +17,10 @@ namespace Interpreting {
         Tokenization::Literal right = expr.right->accept(*this);
         switch (expr.op.type) {
             case Tokenization::MINUS:
-                if (std::holds_alternative<double>(right)) return right;
+                if (std::holds_alternative<double>(right)) return -std::get<double>(right);
                 throwError("Unary '-' is not allowed on '" + getLiteralTypeName(right) + "' type.", expr);
             case Tokenization::NOT:
-                if (std::holds_alternative<bool>(right)) return right;
+                if (std::holds_alternative<bool>(right)) return !std::get<bool>(right);
                 throwError("Unary 'NOT' is not allowed on '" + getLiteralTypeName(right) + "' type.", expr);
         }
         

@@ -87,6 +87,19 @@ Variable are declared and assigned using `LET` keyword
     - eg. `false OR 1 > 0 AND true -> true`
 
 
+### Operator precedence
+
+- You can group expressions using `(` and `)`
+- Precedence is from highest to lowest
+  1. `()` - grouping
+  2. `-` - negation
+  3. `/`,`*`
+  4. `-`,`+`
+  5. `<`,`>`,`<=`,`>=`,`==`,`<>`
+  6. `NOT`
+  7. `AND`
+  8. `OR`
+
 ### Language functionality
 
 - Keywords are case-insensitive
