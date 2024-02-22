@@ -7,24 +7,24 @@
 
 int main(int argc, char** argv) {
     try {
-        // Open file with input
         std::vector<std::string> args(argv, argv + argc);
 
-        // TODO Input params handling
-//        if (argc < 3) {
-//            std::cout << "Usage: " << args[0] << " [conditions] <input_file> <output_file>" << std::endl;
-//            throw std::runtime_error("No input and output file specified.");
-//        }
+        if (args.size() != 2) {
+            std::cout << "Usage: " << args[0] << " <input_file>" << std::endl;
+            return 10;
+        }
 
-
+        // Open file with input
         std::string inputFilename = args[1];
         std::ifstream inStream(inputFilename);
-        if (inStream.fail()) throw std::runtime_error("Failed to open input file");
-        
-//        Tokenization::Tokenizer tokenizer(std::cin);
-        Tokenization::Tokenizer tokenizer(inStream);
-        
+        if (inStream.fail()) {
+            std::cerr << "Error: Failed to open input file." << std::endl;
+            return 9;
+        }
+
+
         // Tokenization
+        Tokenization::Tokenizer tokenizer(inStream);
         std::unique_ptr<std::vector<Tokenization::Token>> tokens;
         try {
             tokenizer.scanTokens();
@@ -34,7 +34,7 @@ int main(int argc, char** argv) {
                       << " Tokenization error: " << tokenizer.getErrorMessage() << std::endl;
             return 11;
         }
-        
+
         // Parsing
         Parsing::Parser parser(std::move(tokens));
         std::unique_ptr<std::vector<ExprStmt::stmt_ptr>> statements;
@@ -51,14 +51,14 @@ int main(int argc, char** argv) {
             }
             return 12;
         }
-        
+
         // Interpreting
         Interpreting::Interpreter interpreter;
         // Set seed for rnd generator
         std::srand(std::time(0));
 
         try {
-            for (auto &statement : *statements) {
+            for (auto &statement: *statements) {
                 interpreter.interpret(statement);
             }
         } catch (const Interpreting::InterpreterError &) {
@@ -68,7 +68,7 @@ int main(int argc, char** argv) {
         }
 
         return 0;
-
+        
     } catch (const std::exception &e) {
         std::cerr << "Unexpected exception: " << e.what() << std::endl;
         return 1;

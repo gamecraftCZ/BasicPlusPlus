@@ -1,3 +1,9 @@
+# BasicPlusPlus
+- Just another BASIC-like language written in C++
+
+### Usage
+`basicplusplus <file>`
+
 ### Example code
 ```basic
 REM Personalised welcome script
