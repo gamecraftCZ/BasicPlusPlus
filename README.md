@@ -139,6 +139,7 @@ Variable are declared and assigned using `LET` keyword
   LET i = 0
   WHILE i < 10 DO
     PRINT "Hello for " + i + " time."
+    LET i = i + 1
   END
   ```
 
