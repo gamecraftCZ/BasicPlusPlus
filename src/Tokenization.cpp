@@ -1,6 +1,5 @@
 #include <optional>
 #include <string>
-#include <istream>
 #include "Tokenization.hpp"
 
 namespace Tokenization {    

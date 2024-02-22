@@ -1,6 +1,5 @@
-#include <iomanip>
 #include <sstream>
-#include <math.h>
+#include <cmath>
 #include <iostream>
 #include "Interpreter.hpp"
 
