@@ -165,7 +165,8 @@ Variable are declared and assigned using `LET` keyword
   - If only `var` is defined, output is saved back to `var`
 
 - `RND var, lowerBound, upperBound`
-  - Generates random whole number in range [lowerBound, upperBound) including lowerBound, excluding upperBound
+  - Generates random integer in range [lowerBound, upperBound) including lowerBound, excluding upperBound.
+  - Stores result to `var`
 
 
 ### Runtime errors
