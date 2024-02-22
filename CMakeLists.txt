@@ -3,11 +3,11 @@ project(BasicPlusPlus)
 
 set(CMAKE_CXX_STANDARD 23)
 
-add_executable(BasicPlusPlus main.cpp
-        Tokenization.hpp
-        Tokenization.cpp
-        Parser.cpp
-        Parser.hpp
-        ExpressionsStatements.hpp
-        Interpreter.cpp
-        Interpreter.hpp)
+add_executable(BasicPlusPlus src/main.cpp
+        src/Tokenization.hpp
+        src/Tokenization.cpp
+        src/Parser.cpp
+        src/Parser.hpp
+        src/ExpressionsStatements.hpp
+        src/Interpreter.cpp
+        src/Interpreter.hpp)
