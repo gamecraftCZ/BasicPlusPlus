@@ -1,6 +1,7 @@
 # BasicPlusPlus
 - Just another BASIC-like language written in C++
 - C++ code documentation can be found in [DEV_DOCS.md](DEV_DOCS.md) directory
+- Available at: [https://github.com/gamecraftCZ/BasicPlusPlus](https://github.com/gamecraftCZ/BasicPlusPlus)
 
 ### Usage
 `basicplusplus <file>`
