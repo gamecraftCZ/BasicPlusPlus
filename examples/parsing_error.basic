@@ -1,0 +1,13 @@
+rem Calculate fibonacci sequence up to certain number
+
+print "Calculating up to " + max_fib
+
+let a = 0
+let b = 1
+let temp = 0
+
+input "Calculate Fibonacci up to? " * (7 ++ 2), max_fib
+
+while a < max_fib do
+    print a
+end
