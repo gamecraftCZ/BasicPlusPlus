@@ -1,5 +1,6 @@
 # BasicPlusPlus
 - Just another BASIC-like language written in C++
+- C++ code documentation can be found in [DEV_DOCS.md](DEV_DOCS.md) directory
 
 ### Usage
 `basicplusplus <file>`
